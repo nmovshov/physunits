@@ -1,0 +1,395 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+    <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+    <TITLE>Physunits Toolbox Documentation</TITLE>
+    <META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Win32)">
+    <META NAME="CREATED" CONTENT="20060609;181171">
+    <META NAME="CHANGEDBY" CONTENT="Naor Movshovitz">
+    <META NAME="CHANGED" CONTENT="20060609;382551">
+    <META NAME="date" CONTENT="2006-06-02">
+    <META NAME="m-file" CONTENT="phhelp">
+    <!-- This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+ -->
+    <STYLE>
+    <!--
+        H1 { margin-left: 0.1in; margin-right: 0.1in; color: #990000 }
+        P { margin-left: 0.1in; margin-right: 0.1in }
+        H2 { margin-left: 0.1in; margin-right: 0.1in; color: #990000; font-size: 14pt }
+        PRE { margin-left: 0.1in; margin-right: 0.1in; margin-top: 0.1in }
+        PRE.codeinput { background: #eeeeee; border: none; padding: 0in }
+        PRE.codeoutput { border: none; padding: 0in; color: #666666 }
+        P.footer { color: #808080; font-size: 7pt; font-style: italic; text-align: right }
+    -->
+    </STYLE>
+</HEAD>
+<BODY LANG="en-US" BGCOLOR="#ffffff" DIR="LTR">
+<H1>Physunits Toolbox Documentation</H1>
+<H2>Contents</H2>
+<UL>
+    <LI><P STYLE="margin-bottom: 0in"><A HREF="#1">About the Physunits
+    toolbox</A>
+    </P>
+    <LI><P STYLE="margin-bottom: 0in"><A HREF="#2">How it works</A>
+    </P>
+    <LI><P STYLE="margin-bottom: 0in"><A HREF="#6">Using the PREAL class</A>
+        </P>
+    <LI><P STYLE="margin-bottom: 0in"><A HREF="#8">Examples</A>
+    </P>
+    <LI><P STYLE="margin-bottom: 0in"><A HREF="#20">Sample program</A>
+    </P>
+    <LI><P STYLE="margin-bottom: 0in"><A HREF="#21">Extending the
+    Physunits toolbox</A>
+    </P>
+    <LI><P><A HREF="#22">Disabling the Physunits toolbox</A>
+    </P>
+</UL>
+<H2><A NAME="1"></A>About the Physunits toolbox</H2>
+<P>The Physunits toolbox is an attempt to confer dimensional
+&lsquo;awareness&rsquo; to the MATLAB environment. The motivation for
+this, as well as a suggested way to go about it, are explained in
+<I>Automated computation and consistency checking of physical
+dimensions and units in scientific programs</I>, Petty, G.W.,
+Software - Practice and Experience, (Volume 31, Issue 11, 19 June
+2001)
+</P>
+<P>The author of the same has also made available for download a
+FORTRAN 90 module that implements this idea in the FORTRAN language.
+The module and paper can be downloaded from
+<A HREF="http://rain.aos.wisc.edu/~gpetty/physunits.html">http://rain.aos.wisc.edu/~gpetty/physunits.html</A>
+.
+</P>
+<P>The Physunits toolbox is based on the above module, and expands
+it, while trying to adhere consistently to MATLAB standards and
+practices.
+</P>
+<H2><A NAME="2"></A>How it works</H2>
+<P>The PHYSUNITS toolbox works by defining the PREAL class, with a
+PREAL data type and overloaded functions to support it. An object of
+type PREAL represents a physical quantity. It has two fields:
+</P>
+<UL>
+    <LI><P STYLE="margin-bottom: 0in"><TT>value</TT> - The numerical
+    value, which must be a numerical type with zero imaginary part.
+    </P>
+    <LI><P><TT>units</TT> - A vector of 7 numbers, representing the
+    physical dimensions associated with <TT>value</TT>.
+    </P>
+</UL>
+<P>The format for the <TT>units</TT> vector is [<FONT FACE="Courier New, monospace">length</FONT>,
+<TT>mass</TT>, <TT>time</TT>, <TT>temperature</TT>, <TT>electric
+current</TT>, <TT>amount of matter</TT>, <TT>luminous intensity</TT>],
+but this format is usually transparent to the user, who defines her
+variables via an interface structure.
+</P>
+<P>The overloaded functions and operators are then responsible for
+enforcing consistency in all operations involving PREAL variables. In
+particular:
+</P>
+<UL>
+    <LI><P STYLE="margin-bottom: 0in">Addition of two variables is only
+    possible if they have the same dimensions.
+    </P>
+    <LI><P STYLE="margin-bottom: 0in">Exponents must be dimensionless.
+    </P>
+    <LI><P STYLE="margin-bottom: 0in">Transcendental functions accept
+    dimensionless arguments only.
+    </P>
+    <LI><P>Binary logical operations can only be performed on variables
+    having the same dimensions.
+    </P>
+</UL>
+<H2><A NAME="6"></A>Using the PREAL class</H2>
+<P>The PREAL class constructor accepts two arguments: a scalar real
+number, and a vector of 7 real numbers; and creates a PREAL object
+using these arguments for the value and units fields. This is a
+cumbersome and error prone method but, fortunately, the user will
+rarely need to use it directly. Instead she calls the function
+<TT>setUnits</TT>, which returns an interface structure that greatly
+facilitates the definition and use of dimensioned variables.
+</P>
+<P>The interface structure contains predefined variables of type
+PREAL, representing the basic SI units as well as many other units,
+derived units, constants of nature, parameters, etc. Get this
+structure by calling the <FONT FACE="Courier New, monospace">setUnits</FONT>
+function. Once this interface structure is present in your workspace,
+you can the use the predefined variables. Define new PREAL variables
+by multiplying a predefined PREAL by a DOUBLE.</P>
+<P STYLE="background: #c0c0c0">Tip: In Matlab version 7 (R14) or
+higher use the auto completion feature to find  the names of
+predefined variables. If you have the output of the <FONT FACE="Courier New, monospace">setUnits</FONT>
+function in the variable <FONT FACE="Courier New, monospace">y</FONT>,
+type <FONT FACE="Courier New, monospace">y</FONT> in the command line
+followed by a period (.), then hit TAB to get a list of all variables
+contained in <FONT FACE="Courier New, monospace">y</FONT>. Type the
+first characters in a variable name and hit TAB again to narrow down
+the search.</P>
+<H2><A NAME="8"></A>Examples</H2>
+<P>In the command window, get the interface structure by calling
+<FONT FACE="Courier New, monospace">setUnits</FONT>:</P>
+<PRE CLASS="codeinput" STYLE="margin-bottom: 0.2in">si=setUnits;</PRE><P>
+Create PREAL variables by multiplying double literals with the
+predefined unit variables:</P>
+<PRE CLASS="codeinput" STYLE="margin-bottom: 0.2in">x=2*si.meter
+
+x =
+
+  2 m
+
+dr=1e-3*si.m
+
+dr =
+
+  0.001 m
+
+F=12*si.newton
+
+F =
+
+  12 m kg s^-2
+ </PRE><P>
+Operations on PREAL types follow the rules of physical dimensions:</P>
+<PRE CLASS="codeinput" STYLE="margin-bottom: 0.2in">x^2
+
+ans =
+
+  4 m^2
+
+x+dr
+
+ans =
+
+  2.001 m
+
+sin(dr/x)
+ans =
+
+  5.0000e-004
+
+F*dr
+
+ans =
+
+  0.012 m^2 kg s^-2
+ </PRE><P>
+You can use the <TT>double</TT> function to convert a preal variable
+to a double. (This function simply discards the <TT>units</TT> field
+of the variable.)
+</P>
+<PRE CLASS="codeinput" STYLE="margin-bottom: 0.2in">fprintf('Work done is %g joules.\n',double(F*dr))
+Work done is 0.012 joules.</PRE><P>
+Attempting an illegal operation results in an error:</P>
+<PRE CLASS="codeinput" STYLE="margin-bottom: 0.2in">x+F
+Error using ==&gt; preal.plus
+Attempt to add dimensionally inconsistent preals</PRE><P>
+Notice that, as a bonus, the physunits toolbox can be used as a unit
+converter.</P>
+<PRE CLASS="codeinput">fprintf('One joule equals %g ergs.\n',double(si.joule/si.erg))
+fprintf('One dyne equals %g Newtons.\n',double(si.dyne/si.newton))
+One joule equals 1e+007 ergs.
+One dyne equals 1e-005 Newtons.</PRE><H2>
+<A NAME="20"></A>Sample program</H2>
+<P>A short sample program that demonstrates the PREAL class can be
+found in <TT>...\physunits\iceball.m</TT>.
+</P>
+<H2><A NAME="21"></A>Extending the Physunits toolbox</H2>
+<P>Anyone who will use the Physunits toolbox will undoubtedly
+discover that new capabilities need to be added. More than likely,
+these will include more functions that need to be overloaded for the
+PREAL class. If you get an error message from MATLAB complaining that
+function so-and-so is not defined for class PREAL, then you should
+simply define it for the PREAL class by putting an m-file with the
+same name in the <TT>@preal</TT> directory. For example, the function
+<TT>sin</TT> is defined for the PREAL class. Take a look in the file
+<TT>sin.m</TT> that resides in the <TT>@preal</TT> directory to see
+how it is defined. With this function as a reference it should not be
+difficult to define the <TT>asin</TT> function also for the PREAL
+class should you find it necessary.
+</P>
+<P>Another improvement you are likely to need is the addition of more
+predefined variables used often in your work. This may be done by
+editing the <TT>setUnits</TT> function, and adding the required
+definitions at the end of the file.
+</P>
+<H2><A NAME="22"></A>Disabling the Physunits toolbox</H2>
+<P>Using physical units in calculations is helpful and natural for
+scientists and engineers, but the need to use a user-defined type
+instead of the standard DOUBLE class comes with a penalty on
+performance. Long calculations involving PREAL variables may become
+too slow. A way to &lsquo;switch off&rsquo; the dimensional awareness
+of the code is therefore desirable. Converting all PREAL variables
+into doubles with the <TT>double</TT> function is not practical.
+Instead, use the <TT>physunits</TT> function with the 'off' flag at
+the beginning of your code.
+</P>
+<PRE CLASS="codeinput" STYLE="margin-bottom: 0.2in">physunits off
+PHYSUNITS disabled.</PRE><P>
+This causes all <I>subsequent</I> variables defined as PREALs in the
+code to be treated as regular double variables. The rest of the code
+should run exactly as it would were it written without any use of
+PREALs.
+</P>
+<P>The recommended practice is therefore to use PREAL variables with
+physical dimensions throughout the code, enjoying the benefits of
+automatic consistency checks, dimensional tracking, and dimensional
+display, during development and debugging. When the code is ready for
+the &lsquo;operational&rsquo; run, a one-line command at the
+beginning will restore performance and efficiency to optimal.
+</P>
+<p>
+An alternative that works equally well is to change calls to <TT>setUnits</TT>
+(typically a single call per application!) into calls to <TT>setFUnits</TT> which
+returns a structure with the same fields but as type <TT>DOUBLE</TT>. This single
+character modification allows you to deploy code developed and debugged with the aid
+of the toolbox to users who don't wish to install it at all.
+</p>
+<P CLASS="footer"><BR>Published with MATLAB&reg; 7.2</P>
+<P><!-- ##### SOURCE BEGIN #####
+%% Physunits Toolbox Documentation
+
+%% About the Physunits toolbox
+% The Physunits toolbox is an attempt to confer dimensional `awareness' to
+% the MATLAB environment. The motivation for this, as well as a suggested
+% way to go about it, are explained in
+% Automated computation and consistency checking of physical dimensions
+% and units in scientific programs, Petty, G.W., Software - Practice and
+% Experience, (Volume 31, Issue 11, 19 June 2001)
+%
+% The author of the same has also made available for download a FORTRAN90
+% module that implements this ides in the FORTRAN language. The module and
+% paper can be downloaded from http://meso.aos.wisc.edu/~gpetty .
+%
+% The Physunits toolbox is based on the above module, and expands
+% it, while trying to adhere consistently to MATLAB standards and
+% practices.
+
+%% How it works
+%%
+% The PHYSUNITS toolbox works by defining the PREAL class, with a PREAL
+% data type and overloaded functions to support it. An object of type
+% PREAL represents a physical quantity. It has two fields:
+%%
+% * |value| - The numerical value, which must be a numerical type with
+% zero imaginary part.
+% * |units| - A vector of 7 numbers, representing the physical dimensions
+% associated with |value|.
+%
+% The format for the |units| vector is [|length|,
+% |mass|, |time|, |temperature|, |electric current|, |amount of matter|,
+% |luminous intensity|],
+% but this format is usually transparent to the user, who defines her
+% variables via an interface structure.
+%
+% The overloaded functions and
+% operators are then responsible for enforcing consistency in all
+% operations envolving PREAL variables. In particular:
+%%
+% * Addition of two variables is only possible if they have the same
+% dimensions.
+% * Exponents must be dimensionless.
+% * Trancendental functions accept dimensionless arguments only.
+% * Binary logical operations can only be perfomed on variables having the
+% same dimensions.
+
+
+%% Using the PREAL class
+%%
+% The PREAL class constructor accepts two arguments: a scalar real number,
+% and a vector of 7 real numbers; and creates a PREAL object using these
+% arguments for the
+% value and units fields. This is a cumbersome and error prone method but,
+% fortunately, the user will rarely need to use it directly. Instead she
+% calls the function |setUnits|, which returns an interface structure
+% that greatly facilitates the definition and use of dimensioned variables.
+%
+% The interface structure contains predefined variables of type PREAL,
+% representing the basic SI units as well as many other units,
+% derived units, constants of nature, parameters, etc. Get this
+% structure by calling the setUnits function. Once this interface
+% structure is present in your workspace, you can the use the predefined
+% variables.
+
+%% Examples
+%%
+% In the command window, get the interface structure by calling setSIUnits:
+si=setUnits;
+%%
+% Create PREAL variables by multiplying double literals with the predefined
+% unit variables:
+x=2*si.meter
+%%
+dr=1e-3*si.m
+%%
+F=12*si.newton
+%%
+% Operations on PREAL types follow the rules of physical dimensions:
+x^2
+%%
+x+dr
+%%
+sin(dr/x)
+%%
+F*dr
+%%
+% You can use the |double| function to convert a preal variable to a
+% double. (This function simply discards the |units| field of the variable.)
+fprintf('Work done is %g joules.\n',double(F*dr))
+%%
+% Attempting an illegal operation results in an error:
+%x+F
+%%
+% Notice that, as a bonus, the physunits toolbox can be used as a unit
+% converter.
+fprintf('One joule equals %g ergs.\n',double(si.joule/si.erg))
+fprintf('One dyne equals %g Newtons.\n',double(si.dyne/si.newton))
+
+%% Sample program
+% A short sample program that demonstrates the PREAL class can be found in
+% |...\physunits\iceball.m|.
+
+%% Extending the Physunits toolbox
+% Anyone who will use the Physunits toolbox will undoubtedly discover that
+% new capabilities need to be added. More than likely, these will include
+% more functions that need to be overloaded for the PREAL class. If you get
+% an error message from MATLAB complaining that function so-and-so is not
+% defined for class PREAL, then you should simply define it for the PREAL
+% class by putting an m-file with the same name in the |@preal| directory.
+% For example, the function |sin| is defined for the PREAL class. Take a
+% look in the file |sin.m| that resides in the |@preal| directory to see
+% how it is defined. With this function as a reference it should not be
+% difficult to define the |asin| function also for the PREAL class should
+% you find it necessary.
+%
+% Another improvent you are likely to need is the addition of more
+% predefined variables used often in your work.
+% This may be done by editing the |setUnits| function,
+% and adding the required definitions at the end of the file.
+
+%% Disabling the Physunits toolbox
+% Using physical units in calculations is helpful and natural for
+% scientists and engineers, but the need to use a user-defined type instead
+% of the standard DOUBLE class comes with a penalty on performance. Long
+% calculations involving PREAL variables may become too slow. A way to
+% `turn off' the dimensional awareness of the code is therefore desirable.
+% Converting all PREAL variables into doubles with the |double| function is
+% not practical. Instead, use the |physunits| function with the 'off' flag
+% at the beginning of your code.
+physunits off
+
+%%
+% This causes all _subsequent_ variables defined as PREALs in the code to
+% be treated as regular double variables. The rest of the code should run
+% exactly as it would were it written without any use of PREALs.
+%
+% The recommended practice is therefore to use PREAL variables with
+% physical dimensions throughout the code, enjoying the benefits of automatic
+% consistency checks, dimensional tracking, and dimensional display, during
+% development and debugging. When the code is ready for the `operational'
+% run, a one-line comand at the beginning will restore performance and
+% efficiency to optimal.
+##### SOURCE END #####
+--><BR><BR>
+</P>
+</BODY>
+</HTML>
