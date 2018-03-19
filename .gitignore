@@ -1,0 +1,7 @@
+# Editors
+*~
+*.swp
+*.asv
+
+# matlab help index
+html/*
