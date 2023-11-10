@@ -68,6 +68,8 @@ y.watt      = y.joule/y.second;
 y.coulomb   = y.ampere*y.second;
 y.volt      = y.joule/y.coulomb;
 y.ohm       = y.volt/y.ampere;
+y.tesla     = y.newton/y.ampere/y.meter;
+y.gauss     = y.tesla/1e4;
 
 %% More abbreviations
 y.deg = y.degree;
@@ -78,6 +80,8 @@ y.J   = y.joule;
 y.W   = y.watt;
 y.C   = y.coulomb;
 y.V   = y.volt;
+y.T   = y.tesla;
+y.G   = y.gauss;
 
 %% Definitions of common physical constants
 % 2018 NIST reference <http://physics.nist.gov/cuu/index.html>
